@@ -1,0 +1,36 @@
+{
+  "name": "rosie-extended",
+  "description": "Typesafe factory options and other utility functions",
+  "keywords": [
+    "rosie",
+    "test",
+    "factory"
+  ],
+  "version": "1.1.0",
+  "license": "MIT",
+  "homepage": "https://github.com/NvGary/rosie-extende#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NvGary/rosie-extended.git"
+  },
+  "author": "Gary Nicholson <gary@agilenv.com>",
+  "main": "src/index.ts",
+  "types": "types/index.d.ts",
+  "sideEffects": [
+    "src/index.ts"
+  ],
+  "dependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "rosie": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/rosie": "^0.0.40",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.0.5",
+    "typescript": "^5.0.2"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}
