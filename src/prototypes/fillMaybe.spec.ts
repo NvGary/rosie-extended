@@ -21,6 +21,7 @@ jest.mock('../utils/maybe', () => {
         __esModule: true,
         default: maybe,
         maybe,
+        mustHave: jest.fn(),
     };
 });
 
@@ -55,34 +56,37 @@ describe('fillMaybe', () => {
         ${mockThisFactoryEx} | ${'IFactoryEx'} | ${mockFactoryEx} | ${'IFactoryEx'}
     `('working with THIS type $type and factory $name', ({ THIS, factory }) => {
         describe('fillMaybe(attr, factory)', () => {
-            describe('setup options', () => {
-                it('creates includeMaybe option where it does NOT already exist', () => {
+            describe.each`
+                optionKey         | optionDefaultValue
+                ${'includeMaybe'} | ${true}
+                ${'mustHave'}     | ${[]}
+            `('setup option $optionKey', ({ optionKey, optionDefaultValue }) => {
+                it('creates $optionKey option where it does NOT already exist', () => {
                     impl.call(THIS, 'address', factory);
 
-                    expect(THIS.option).toBeCalledTimes(1);
-                    expect(THIS.option).toBeCalledWith('includeMaybe', true);
+                    expect(THIS.option).toHaveBeenCalledWith(optionKey, optionDefaultValue);
                 });
 
-                it('does NOT create includeMaybe option where it DOES already exist', () => {
-                    THIS.opts.includeMaybe = true;
+                it('does NOT create $optionKey option where it DOES already exist', () => {
+                    THIS.opts[optionKey] = optionDefaultValue;
 
                     impl.call(THIS, 'address', factory);
 
-                    expect(THIS.option).not.toBeCalled();
+                    expect(THIS.option).not.toHaveBeenCalledWith(optionKey, expect.anything());
                 });
             });
 
             it('maps to rosie after(callback)', () => {
                 impl.call(THIS, 'address', factory);
 
-                expect(THIS.after).toBeCalledTimes(1);
-                expect(THIS.after).toBeCalledWith(expect.any(Function));
+                expect(THIS.after).toHaveBeenCalledTimes(1);
+                expect(THIS.after).toHaveBeenCalledWith(expect.any(Function));
             });
 
             describe('callback behaviour', () => {
                 const address = {
-                    street: faker.address.streetAddress(),
-                    city: faker.address.cityName(),
+                    street: faker.location.streetAddress(),
+                    city: faker.location.city(),
                 };
                 const opts = {};
 
@@ -102,23 +106,21 @@ describe('fillMaybe', () => {
                     cb(obj, opts);
 
                     expect(obj).toHaveProperty('address', result);
-                    expect(factory.build).toBeCalledTimes(callsToBuild);
-                    expect(maybe).toBeCalledTimes(callsToMaybe);
+                    expect(factory.build).toHaveBeenCalledTimes(callsToBuild);
+                    expect(maybe).toHaveBeenCalledTimes(callsToMaybe);
                 });
 
-                it.each`
-                    includeMaybe | mock                          | build
-                    ${true}      | ${(v: () => unknown) => v()}  | ${1}
-                    ${false}     | ${(): undefined => undefined} | ${0}
-                `('respects maybe = $includeMaybe', ({ includeMaybe, mock, build: callsToBuild }) => {
-                    (maybe as jest.Mock).mockImplementationOnce(mock);
+                it('passes MaybeFactoryOptions values', () => {
+                    const includeMaybe = faker.datatype.boolean();
+                    const mustHave = new Array(faker.number.int({min: 1, max: 5})).fill(() => faker.word.sample());
 
                     const [[cb]] = (THIS.after as jest.Mock).mock.calls;
-                    cb({}, { ...opts, includeMaybe });
+                    cb({}, { ...opts, includeMaybe, mustHave });
 
-                    expect(maybe).toBeCalledTimes(1);
-                    expect(maybe).toBeCalledWith(expect.any(Function), includeMaybe);
-                    expect(factory.build).toBeCalledTimes(callsToBuild);
+                    expect(maybe).toHaveBeenCalledTimes(1);
+                    expect(maybe).toHaveBeenCalledWith(expect.any(Function), expect.any(String), expect.objectContaining({
+                        includeMaybe, mustHave
+                    }));
                 });
 
                 it.each`
@@ -129,42 +131,45 @@ describe('fillMaybe', () => {
                     const [[cb]] = (THIS.after as jest.Mock).mock.calls;
                     cb({ ...obj }, opts);
 
-                    expect(factory.build).toBeCalledTimes(1);
-                    expect(factory.build).toBeCalledWith(obj.address, opts);
+                    expect(factory.build).toHaveBeenCalledTimes(1);
+                    expect(factory.build).toHaveBeenCalledWith(obj.address, opts);
                 });
             });
         });
 
         describe('fillMaybe(attr, size, factory)', () => {
-            describe('setup options', () => {
-                it('creates includeMaybe option where it does NOT already exist', () => {
+            describe.each`
+                optionKey | optionDefaultValue
+                ${'includeMaybe'} | ${true}
+                ${'mustHave'} | ${[]}
+            `('setup option $optionKey', ({ optionKey, optionDefaultValue }) => {
+                it('creates $optionKey option where it does NOT already exist', () => {
                     impl.call(THIS, 'addresses', 'addressCount', factory);
 
-                    expect(THIS.option).toBeCalledTimes(1);
-                    expect(THIS.option).toBeCalledWith('includeMaybe', true);
+                    expect(THIS.option).toHaveBeenCalledWith(optionKey, optionDefaultValue);
                 });
 
-                it('does NOT create includeMaybe option where it DOES already exist', () => {
-                    THIS.opts.includeMaybe = true;
+                it('does NOT create $optionKey option where it DOES already exist', () => {
+                    THIS.opts[optionKey] = optionDefaultValue;
 
                     impl.call(THIS, 'addresses', 'addressCount', factory);
 
-                    expect(THIS.option).not.toBeCalled();
+                    expect(THIS.option).not.toHaveBeenCalledWith(optionKey, expect.anything());
                 });
             });
 
             it('maps to rosie after(callback)', () => {
                 impl.call(THIS, 'addresses', 'addressCount', factory);
 
-                expect(THIS.after).toBeCalledTimes(1);
-                expect(THIS.after).toBeCalledWith(expect.any(Function));
+                expect(THIS.after).toHaveBeenCalledTimes(1);
+                expect(THIS.after).toHaveBeenCalledWith(expect.any(Function));
             });
 
             describe('callback behaviour', () => {
                 const addresses = [
                     {
-                        street: faker.address.streetAddress(),
-                        city: faker.address.cityName(),
+                        street: faker.location.streetAddress(),
+                        city: faker.location.city(),
                     },
                 ];
                 const opts = { addressCount: 1 };
@@ -189,23 +194,22 @@ describe('fillMaybe', () => {
                     cb(obj, opts);
 
                     expect(obj).toHaveProperty('addresses', result);
-                    expect(fillGaps).toBeCalledTimes(callsToBuild);
-                    expect(maybe).toBeCalledTimes(callsToMaybe);
+                    expect(fillGaps).toHaveBeenCalledTimes(callsToBuild);
+                    expect(maybe).toHaveBeenCalledTimes(callsToMaybe);
                 });
 
-                it.each`
-                    includeMaybe | mock                          | build
-                    ${true}      | ${(v: () => unknown) => v()}  | ${1}
-                    ${false}     | ${(): undefined => undefined} | ${0}
-                `('respects maybe = $includeMaybe', ({ includeMaybe, mock, build: callsToBuild }) => {
-                    (maybe as jest.Mock).mockImplementationOnce(mock);
+
+                it('passes MaybeFactoryOptions values', () => {
+                    const includeMaybe = faker.datatype.boolean();
+                    const mustHave = new Array(faker.number.int({min: 1, max: 5})).fill(() => faker.word.sample());
 
                     const [[cb]] = (THIS.after as jest.Mock).mock.calls;
-                    cb({}, { ...opts, includeMaybe });
+                    cb({}, { ...opts, includeMaybe, mustHave });
 
-                    expect(maybe).toBeCalledTimes(1);
-                    expect(maybe).toBeCalledWith(expect.any(Function), includeMaybe);
-                    expect(fillGaps).toBeCalledTimes(callsToBuild);
+                    expect(maybe).toHaveBeenCalledTimes(1);
+                    expect(maybe).toHaveBeenCalledWith(expect.any(Function), expect.any(String), expect.objectContaining({
+                        includeMaybe, mustHave
+                    }));
                 });
 
                 it.each`
@@ -216,8 +220,8 @@ describe('fillMaybe', () => {
                     const [[cb]] = (THIS.after as jest.Mock).mock.calls;
                     cb({ ...obj }, opts);
 
-                    expect(fillGaps).toBeCalledTimes(1);
-                    expect(fillGaps).toBeCalledWith(obj.addresses, factory, expect.anything(), undefined, opts);
+                    expect(fillGaps).toHaveBeenCalledTimes(1);
+                    expect(fillGaps).toHaveBeenCalledWith(obj.addresses, factory, expect.anything(), undefined, opts);
                 });
 
                 it.each`
@@ -232,8 +236,8 @@ describe('fillMaybe', () => {
                     const [[cb]] = (THIS.after as jest.Mock).mock.calls;
                     cb({ ...obj }, opts);
 
-                    expect(fillGaps).toBeCalledTimes(1);
-                    expect(fillGaps).toBeCalledWith(obj.addresses, expect.anything(), resultant, undefined, expect.anything());
+                    expect(fillGaps).toHaveBeenCalledTimes(1);
+                    expect(fillGaps).toHaveBeenCalledWith(obj.addresses, expect.anything(), resultant, undefined, expect.anything());
                 });
             });
         });

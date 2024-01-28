@@ -21,11 +21,11 @@ describe('fillGaps', () => {
         ${mockFactoryEx} | ${'IFactoryEx'}
     `('working with $name', ({ factory }) => {
         describe('build a new array', () => {
-            const size = faker.datatype.number({ min: 1, max: 5 });
+            const size = faker.number.int({ min: 1, max: 5 });
 
             it('invokes factory.buildList', () => {
                 fillGaps(undefined, factory, size);
-                expect(factory.buildList).toBeCalledWith(size, {}, {});
+                expect(factory.buildList).toHaveBeenCalledWith(size, {}, {});
             });
 
             it('has correct size', () => {
@@ -35,13 +35,18 @@ describe('fillGaps', () => {
         });
 
         describe('reuse existing array', () => {
-            const size = faker.datatype.number({ min: 1, max: 5 });
+            const size = faker.number.int({ min: 1, max: 5 });
             const props = new Array(size).fill({});
             const ignored_size_param = 10;
 
+            it('respects empty array', () => {
+                const res = fillGaps([], factory, ignored_size_param);
+                expect(res).toEqual([]);
+            })
+
             it('invokes factory.build', () => {
                 fillGaps(props, factory, ignored_size_param);
-                expect(factory.build).toBeCalledTimes(size);
+                expect(factory.build).toHaveBeenCalledTimes(size);
             });
 
             it('maintains original size', () => {

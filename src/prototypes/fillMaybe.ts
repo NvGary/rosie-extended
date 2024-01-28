@@ -2,18 +2,21 @@
 import { IFactory } from 'rosie';
 
 import { fillGaps, maybe } from '../utils';
-import { IFactoryEx, TFactory } from '../types';
+import { RosieFactoryOptions, IFactoryEx, TFactory } from '../types';
 
 export default function <T>(this: IFactory<T>, attr: string, size: string | TFactory, factory?: TFactory): IFactory<T>;
-export default function <T, U>(this: IFactoryEx<T, U>, attr: string, size: string | TFactory, factory?: TFactory): IFactoryEx<T, U>;
-export default function <T, U>(this: any, attr: string, size: string | TFactory, factory?: TFactory): TFactory<T, U> {
+export default function <T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(this: IFactoryEx<T, U>, attr: string, size: string | TFactory, factory?: TFactory): IFactoryEx<T, U>;
+export default function <T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(this: any, attr: string, size: string | TFactory, factory?: TFactory): TFactory<T, U> {
     if (this.opts['includeMaybe'] === undefined) {
         this.option('includeMaybe', true);
+    }
+    if (this.opts['mustHave'] === undefined) {
+        this.option('mustHave', []);
     }
 
     switch (arguments.length) {
         case 3: {
-            this.after((obj: Record<string, any>, opts: Record<string, any>) => {
+            this.after((obj: T, opts: U) => {
                 const count: number = opts[size as string] ?? obj[size as string];
 
                 if (Object.prototype.hasOwnProperty.call(obj, attr)) {
@@ -24,8 +27,9 @@ export default function <T, U>(this: any, attr: string, size: string | TFactory,
                         obj[attr] = fillGaps(obj[attr], factory!, count, undefined, opts);
                     }
                 } else {
-                    // respect maybe
-                    obj[attr] = maybe(() => fillGaps(undefined, factory!, count, undefined, opts), opts['includeMaybe']);
+                    const cb = () => fillGaps(undefined, factory!, count, undefined, opts);
+                    // respect maybe & mustHave
+                    obj[attr] = maybe(cb as () => T[keyof T], attr as keyof T, { includeMaybe: opts.includeMaybe , mustHave: opts.mustHave });
                 }
             });
             break;
@@ -41,8 +45,9 @@ export default function <T, U>(this: any, attr: string, size: string | TFactory,
                         obj[attr] = factory!.build(obj[attr], opts);
                     }
                 } else {
-                    // respect maybe
-                    obj[attr] = maybe(() => factory!.build(undefined, opts), opts['includeMaybe']);
+                    const cb = () => factory!.build(undefined, opts);
+                    // respect maybe & mustHave
+                    obj[attr] = maybe(cb as () => T[keyof T], attr as keyof T, { includeMaybe: opts.includeMaybe , mustHave: opts.mustHave });
                 }
             });
             break;

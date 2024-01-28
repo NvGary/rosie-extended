@@ -61,7 +61,9 @@ import 'rosie-extended';
 
 #### Factory (constructor)
 
-Passing an Options interface as the second generic type, allows for type-safe compilation for all option parameters. If your factory actively uses maybe or any of its variants, e.g. fillMaybe, it is recommended the Option interface inherit from `MaybeOptions`. This interface adds an `includeMaybe` option which can be set during any future build calls. Other options may be added in future releases.
+Passing an Options interface as the second generic type, allows for type-safe compilation for all option parameters. If your factory actively uses maybe or any of its variants, e.g. fillMaybe, it is recommended the Option interface inherit from `RosieFactoryOptions`. This interface adds the following options which can be set during any future build calls. Other options may be added in future releases.
+- `includeMaybe` - should **all** _maybe_ attributes be included in the final object - defaults to `true`
+- `mustHave` - named attributes must be included in the final object - defaults to empty array `[]`
 
 #### instance.maybe:
 

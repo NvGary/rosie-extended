@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IFactory } from 'rosie';
 
-export interface MaybeOptions {
-    includeMaybe: boolean;
-}
+export interface MaybeFactoryOptions<T> {
+    includeMaybe?: boolean;
+    mustHave?: Array<keyof T>
+};
 
-export interface IFactoryEx<T = any, U = any> {
+export type RosieFactoryOptions<T> = MaybeFactoryOptions<T> & {}
+
+export interface IFactoryEx<T = any, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>> {
     /**
      * Define an optional attribute on this factory. Optional attributes are added to the
      * factory in an identical syntax to normal attributes.
@@ -16,10 +19,10 @@ export interface IFactoryEx<T = any, U = any> {
      * This can be manipulated with the 'includeMaybe' option when calling #build.
      *
      * ```ts
-     * new Factory<T, U extends MaybeOptions>().build({}, { includeMaybe: false })
+     * new Factory<T, U extends RosieFactoryOptions>().build({}, { includeMaybe: false })
      * ```
      *
-     * Factories using 'maybe' should ensure their Options inherit {@link MaybeOptions}. This
+     * Factories using 'maybe' should ensure their Options inherit {@link RosieFactoryOptions}. This
      * adds an 'includeMaybe' for #build to optionally specify.
      *
      * @typeparam K name of attribute
@@ -286,8 +289,8 @@ export interface IFactoryEx<T = any, U = any> {
      * @return {Factory}
      */
     extend<K extends T>(name: IFactory<K>): IFactoryEx<T, U>;
-    extend<K extends Partial<T>, J extends Partial<U>>(name: IFactoryEx<K, J>): IFactoryEx<T, U>;
+    extend<K extends Partial<T>, J extends Partial<U>>(name: IFactoryEx<K, Required<J>>): IFactoryEx<T, U>;
     extend(name: string): IFactoryEx<T, U>;
 }
 
-export type TFactory<T = any, U = any> = IFactory<T> | IFactoryEx<T, U>;
+export type TFactory<T = any, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>> = IFactory<T> | IFactoryEx<T, U>;

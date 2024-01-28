@@ -2,5 +2,5 @@ import { install } from './prototypes/install';
 
 install();
 
-export { IFactoryEx, MaybeOptions } from './types';
+export { IFactoryEx, RosieFactoryOptions as RosieFactoryOptions } from './types';
 export * from './utils';

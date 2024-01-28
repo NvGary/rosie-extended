@@ -8,7 +8,7 @@ jest.mock('./prototypes/install', () => ({
 describe('entry point', () => {
     describe('side effects', () => {
         it('auto performs install', () => {
-            expect(install).toBeCalledTimes(1);
+            expect(install).toHaveBeenCalledTimes(1);
         });
     });
 });

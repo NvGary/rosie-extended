@@ -1,4 +1,4 @@
-import { TFactory } from '../types';
+import { RosieFactoryOptions, TFactory } from '../types';
 
 /**
  * Takes an array of partial objects and fills any missing attributes using the provided factory.
@@ -12,7 +12,7 @@ import { TFactory } from '../types';
  * @param {Partial<U>=} options - Options to pass to factory
  * @returns {Array} Array of fully populated data objects
  */
-export function fillGaps<T, U>(
+export function fillGaps<T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(
     data: Array<T> | undefined,
     factory: TFactory<T, U>,
     size: number,

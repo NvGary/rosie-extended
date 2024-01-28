@@ -6,9 +6,9 @@
     "test",
     "factory"
   ],
-  "version": "1.1.0",
+  "version": "0.2.1",
   "license": "MIT",
-  "homepage": "https://github.com/NvGary/rosie-extende#readme",
+  "homepage": "https://github.com/NvGary/rosie-extended#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/NvGary/rosie-extended.git"
@@ -20,15 +20,15 @@
     "src/index.ts"
   ],
   "dependencies": {
-    "@faker-js/faker": "^7.6.0",
-    "rosie": "^2.1.0"
+    "@faker-js/faker": "^8.3.1",
+    "rosie": "^2.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.0",
-    "@types/rosie": "^0.0.40",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.0.5",
-    "typescript": "^5.0.2"
+    "@types/jest": "^29.5.11",
+    "@types/rosie": "^0.0.45",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
   },
   "scripts": {
     "test": "jest"

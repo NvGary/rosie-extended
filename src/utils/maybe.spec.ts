@@ -2,86 +2,62 @@ import { faker } from '@faker-js/faker';
 
 import { maybe } from './maybe';
 
-jest.mock('@faker-js/faker', () => ({
-    faker: {
-        helpers: {
-            maybe: jest.fn(),
-        },
-    },
-}));
+const fakerMockMaybe = jest.spyOn(faker.helpers, 'maybe');
 
-const fakerMockMaybe = faker.helpers.maybe as jest.Mock;
+type Customer = {
+    name: string;
+    age: number;
+};
 
 describe('maybe', () => {
-    describe('faker resolves to true', () => {
+    describe.each`
+        fakerImpl       | cbInvoked | description
+        ${(cb) => cb()} | ${1}      | ${'faker resolves to true'}
+        ${undefined}    | ${0}      | ${'faker resolves to false'}
+    `('$description', ({cbInvoked, fakerImpl}) => {
+        let cb: jest.Mock;
         beforeEach(() => {
-            fakerMockMaybe.mockImplementation((cb) => cb());
+            cb = jest.fn();
+            fakerMockMaybe.mockImplementation(fakerImpl);
         });
 
-        it('invokes the provided callback', () => {
-            const cb = jest.fn();
-            maybe(cb);
+        it('invokes the provided callback $cbInvoked times', () => {
+            maybe<Customer>(cb);
 
-            expect(cb).toBeCalledTimes(1);
+            expect(cb).toHaveBeenCalledTimes(cbInvoked);
         });
 
-        it('returns the return value from the callback', () => {
-            const cb = jest.fn().mockReturnValue('blah');
-            const res = maybe(cb);
+        if (cbInvoked){
+            it('returns the return value from the callback', () => {
+                cb.mockReturnValue(faker.word.sample());
+                const res = maybe(cb);
+    
+                expect(res).toBe(cb.mock.results[0].value);
+            });
+        }
 
-            expect(res).toBe('blah');
+        it('respects parameter (includeMaybe = false)', () => {
+            maybe<Customer>(cb, 'name', { includeMaybe: false });
+
+            expect(fakerMockMaybe).not.toHaveBeenCalled();
+            expect(cb).not.toHaveBeenCalled();
         });
 
-        it('respects parameter (check = true)', () => {
-            const cb = jest.fn();
-            maybe(cb, true);
+        it('respects parameter mustHave when (includeMaybe = false)', () => {
+            maybe<Customer>(cb, 'name', { includeMaybe: false, mustHave: ['name'] });
 
-            expect(fakerMockMaybe).toBeCalledTimes(1);
+            expect(fakerMockMaybe).not.toHaveBeenCalled();
+            expect(cb).toHaveBeenCalledTimes(1);
         });
 
-        it('respects parameter (check = false)', () => {
-            const cb = jest.fn();
-            maybe(cb, false);
+        it('properly checks mustHave for attr name', () => {
+            maybe<Customer>(cb, 'name', { includeMaybe: false, mustHave: ['age'] });
 
-            expect(fakerMockMaybe).not.toBeCalled();
-        });
-    });
-
-    describe('faker resolves to false', () => {
-        beforeEach(() => {
-            fakerMockMaybe.mockReturnValue(undefined);
-        });
-
-        it('does not invoke the provided callback', () => {
-            const cb = jest.fn();
-            maybe(cb);
-
-            expect(cb).not.toBeCalled();
-        });
-
-        it('returns undefined', () => {
-            const cb = jest.fn().mockReturnValue('blah');
-            const res = maybe(cb);
-
-            expect(res).toBeUndefined();
-        });
-
-        it('respects parameter (check = true)', () => {
-            const cb = jest.fn();
-            maybe(cb, true);
-
-            expect(fakerMockMaybe).toBeCalledTimes(1);
-        });
-
-        it('respects parameter (check = false)', () => {
-            const cb = jest.fn();
-            maybe(cb, false);
-
-            expect(fakerMockMaybe).not.toBeCalled();
-        });
+            expect(cb).not.toHaveBeenCalled();
+        })
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        jest.resetAllMocks();
     });
 });

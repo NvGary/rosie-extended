@@ -1,6 +1,16 @@
 # Change Log
 
-## 1.1.0
+## 0.2.1
+
+### BaseFactoryOptions.mustHave
+
+New factory option allows for optional attributes to be mandatory (always included) in the generated test data.
+`mustHave` takes precedence over `includeMaybe`. `includeMaybe` can be false and any attributes listed as `mustHave`
+will still be created and appropriately populated with a relevant value.
+
+`mustHave` defaults to the empty array []
+
+## 0.2.0
 
 ### bug fixes
 
@@ -26,7 +36,7 @@ The following signatures are available
 -   `fillMaybe(name, factory)`
 -   `fillMaybe(name, arraySize, factory)`
 
-## 1.0.0
+## 0.1.0
 
 ### Typesafe Options
 

@@ -80,19 +80,22 @@ declare module 'rosie' {
     }
 
     export interface IFactoryStatic {
-        new <T, U>(): IFactoryEx<T, U>;
+        new <T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(): IFactoryEx<T, U>;
     }
 }
 
-export interface MaybeOptions {
-    includeMaybe: boolean;
+export interface MaybeFactoryOptions<T> {
+    includeMaybe?: boolean;
+    mustHave?: [keyof T]
 }
+
+export type RosieFactoryOptions<T> = MaybeFactoryOptions<T> & {}
 
 /**
  * @template [T=any] data structure to create
  * @template [U=any] build options
  */
-export interface IFactoryEx<T = any, U = any> {
+export interface IFactoryEx<T = any, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>> {
     /**
      * @typeparam K - name of attribute
      * @callback GeneratorFunction
@@ -109,7 +112,7 @@ export interface IFactoryEx<T = any, U = any> {
      * This can be manipulated with the 'includeMaybe' option when calling #build.
      *
      * ```ts
-     * new Factory<T, U extends MaybeOptions>().build({}, { includeMaybe: false })
+     * new Factory<T, U extends RosieFactoryOptions>().build({}, { includeMaybe: false })
      * ```
      *
      * Dependencies can be names of either attributes or options, or any combination of.
@@ -117,7 +120,7 @@ export interface IFactoryEx<T = any, U = any> {
      * self-dependency is not allowed and will be removed. Neither can 'includeMaybe' be
      * passed to the generator function.
      *
-     * Factories using 'maybe' should ensure their Options inherit {@link MaybeOptions}. This
+     * Factories using 'maybe' should ensure their Options inherit {@link RosieFactoryOptions}. This
      * adds an 'includeMaybe' for #build to optionally specify.
      *
      * @typeparam K name of attribute
@@ -382,7 +385,7 @@ export interface IFactoryEx<T = any, U = any> {
      * @return {Factory}
      */
     extend<K extends T>(name: IFactory<K>): IFactoryEx<T, U>;
-    extend<K extends Partial<T>, J extends Partial<U>>(name: IFactoryEx<K, J>): IFactoryEx<T, U>;
+    extend<K extends Partial<T>, J extends Partial<U>>(name: IFactoryEx<K, Required<J>>): IFactoryEx<T, U>;
     extend(name: string): IFactoryEx<T, U>;
 }
 
@@ -393,7 +396,7 @@ export function fillGaps<T>(
     attributes?: { [k in keyof T]?: T[k] },
     options?: any
 ): Array<T>;
-export function fillGaps<T, U>(
+export function fillGaps<T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(
     data: Array<T> | undefined,
     factory: IFactoryEx<T, U>,
     size: number,
@@ -401,4 +404,15 @@ export function fillGaps<T, U>(
     options?: { [o in keyof U]?: U[o] }
 ): Array<T>;
 
-export function maybe<T>(callback: () => T | undefined, check?: boolean): T | undefined;
+/**
+ * Returns the result of the callback if the probability check was successful, otherwise `undefined`.
+ *
+ * @template T - The type of result of the given callback
+ * @typeparam K name of attribute
+ * @param {callback} callback - The callback to be invoked if the probability check was successful
+ * @param {K=} name the attribute name
+ * @param {MaybeFactoryOptions=} options - Options controlling function behaviour
+ * @returns {NonNullable<T>} Result of the callback, or undefined if callback was not invoked
+ */
+export function maybe<T>(callback: () => NonNullable<T>): NonNullable<T> | undefined;
+export function maybe<T = Record<string, any>, K extends keyof T = keyof T>(callback: () => T[K], name: K, options: MaybeFactoryOptions<T>): T[K] | undefined;

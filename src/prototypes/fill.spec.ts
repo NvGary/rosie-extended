@@ -43,16 +43,16 @@ describe('fill', () => {
             });
 
             it("maps to rosie attr('name', ['name'], generator", () => {
-                expect(THIS.attr).toBeCalledTimes(1);
-                expect(THIS.attr).toBeCalledWith('name', ['name'], expect.anything());
+                expect(THIS.attr).toHaveBeenCalledTimes(1);
+                expect(THIS.attr).toHaveBeenCalledWith('name', ['name'], expect.anything());
             });
 
             it('has generator (props) => factory.build({ ...props })', () => {
                 const [[, , cb]] = (THIS.attr as jest.Mock).mock.calls;
                 cb({ foo: 'bar' });
 
-                expect(factory.build).toBeCalledTimes(1);
-                expect(factory.build).toBeCalledWith({ foo: 'bar' }, expect.anything());
+                expect(factory.build).toHaveBeenCalledTimes(1);
+                expect(factory.build).toHaveBeenCalledWith({ foo: 'bar' }, expect.anything());
             });
         });
 
@@ -62,16 +62,16 @@ describe('fill', () => {
             });
 
             it("maps to rosie attr('name', ['name', 'nameCount'], generator", () => {
-                expect(THIS.attr).toBeCalledTimes(1);
-                expect(THIS.attr).toBeCalledWith('name', ['name', 'nameCount'], expect.anything());
+                expect(THIS.attr).toHaveBeenCalledTimes(1);
+                expect(THIS.attr).toHaveBeenCalledWith('name', ['name', 'nameCount'], expect.anything());
             });
 
             it('has generator (props, size) => factory.build({ ...props })', () => {
                 const [[, , cb]] = (THIS.attr as jest.Mock).mock.calls;
                 cb([{ foo: 'bar' }], 2);
 
-                expect(fillGaps).toBeCalledTimes(1);
-                expect(fillGaps).toBeCalledWith([{ foo: 'bar' }], factory, 2, undefined, expect.anything());
+                expect(fillGaps).toHaveBeenCalledTimes(1);
+                expect(fillGaps).toHaveBeenCalledWith([{ foo: 'bar' }], factory, 2, undefined, expect.anything());
             });
         });
     });
