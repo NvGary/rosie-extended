@@ -4,7 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   collectCoverage: true,
   collectCoverageFrom: ['**/*.ts'],
-  coveragePathIgnorePatterns: ['<rootDir>/node_modules/', '\\.d\\.ts'],
+  coveragePathIgnorePatterns: ['<rootDir>/node_modules/', '\\.d\\.ts', 'index.ts'],
   coverageReporters: ['json-summary', 'html', 'text', 'text-summary'],
   coverageThreshold: {
       global: {

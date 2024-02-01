@@ -1,4 +1,4 @@
-import { IFactory } from 'rosie';
+import { IFactory, type Factory } from 'rosie';
 
 declare module 'rosie' {
     export interface IFactory<T = any> {
@@ -80,7 +80,7 @@ declare module 'rosie' {
     }
 
     export interface IFactoryStatic {
-        new <T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(): IFactoryEx<T, U>;
+        new <T, U extends RosieFactoryOptions<T> = any>(): IFactoryEx<T, U>;
     }
 }
 
@@ -95,7 +95,7 @@ export type RosieFactoryOptions<T> = MaybeFactoryOptions<T> & {}
  * @template [T=any] data structure to create
  * @template [U=any] build options
  */
-export interface IFactoryEx<T = any, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>> {
+export interface IFactoryEx<T = any, U = any> {
     /**
      * @typeparam K - name of attribute
      * @callback GeneratorFunction
@@ -391,14 +391,14 @@ export interface IFactoryEx<T = any, U extends RosieFactoryOptions<T> = RosieFac
 
 export function fillGaps<T>(
     data: Array<T> | undefined,
-    factory: IFactory<T>,
+    factory: Pick<IFactory<T>, 'build' | 'buildList'>,
     size: number,
     attributes?: { [k in keyof T]?: T[k] },
     options?: any
 ): Array<T>;
 export function fillGaps<T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(
     data: Array<T> | undefined,
-    factory: IFactoryEx<T, U>,
+    factory: Pick<IFactoryEx<T, U>, 'build' | 'buildList'>,
     size: number,
     attributes?: { [k in keyof T]?: T[k] },
     options?: { [o in keyof U]?: U[o] }
@@ -416,3 +416,5 @@ export function fillGaps<T, U extends RosieFactoryOptions<T> = RosieFactoryOptio
  */
 export function maybe<T>(callback: () => NonNullable<T>): NonNullable<T> | undefined;
 export function maybe<T = Record<string, any>, K extends keyof T = keyof T>(callback: () => T[K], name: K, options: MaybeFactoryOptions<T>): T[K] | undefined;
+
+export function extend(factory: typeof Factory): void;

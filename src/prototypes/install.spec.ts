@@ -37,7 +37,7 @@ describe('install', () => {
 
     describe('after install', () => {
         it('has custom Factory prototypes', () => {
-            install();
+            install(Factory);
 
             expect(Factory.prototype.fill).toBe(fill);
             expect(Factory.prototype.fillMaybe).toBe(fillMaybe);
@@ -45,8 +45,8 @@ describe('install', () => {
         });
 
         it('it safe to invoke install() multiple times', () => {
-            install();
-            install();
+            install(Factory);
+            install(Factory);
 
             expect(Factory.prototype.fill).toBe(fill);
             expect(Factory.prototype.fillMaybe).toBe(fillMaybe);

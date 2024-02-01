@@ -7,12 +7,12 @@ import { fillGaps } from './fillGaps';
 const mockFactory = {
     build: jest.fn().mockReturnValue({}),
     buildList: jest.fn().mockImplementation((size) => new Array(size).fill({})),
-} as Partial<IFactory> as IFactory;
+} as Pick<IFactory, 'build' | 'buildList'>;
 
 const mockFactoryEx = {
     build: jest.fn().mockReturnValue({}),
     buildList: jest.fn().mockImplementation((size) => new Array(size).fill({})),
-} as Partial<IFactoryEx> as IFactoryEx;
+} as Pick<IFactoryEx, 'build' | 'buildList'>;
 
 describe('fillGaps', () => {
     describe.each`

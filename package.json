@@ -6,7 +6,7 @@
     "test",
     "factory"
   ],
-  "version": "0.2.1",
+  "version": "0.3.0",
   "license": "MIT",
   "homepage": "https://github.com/NvGary/rosie-extended#readme",
   "repository": {
@@ -16,8 +16,9 @@
   "author": "Gary Nicholson <gary@agilenv.com>",
   "main": "src/index.ts",
   "types": "types/index.d.ts",
-  "sideEffects": [
-    "src/index.ts"
+  "files": [
+    "src",
+    "types/index.d.ts"
   ],
   "dependencies": {
     "@faker-js/faker": "^8.3.1",

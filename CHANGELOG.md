@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.0
+
+### breaking change
+
+- installation is no longer implicit. An explicit call to `extend` is now required.
+
 ## 0.2.1
 
 ### BaseFactoryOptions.mustHave

@@ -49,10 +49,14 @@ const betterGame = BetterGameFactory.build({}, { misspeltPlayerCount: '2' }); //
 
 ## Usage in Node.js
 
-Before using any of the extended methods (e.g. fill) you'll need to bring rosie-extended into scope.
+Before using any of the extended methods (e.g. fill) you'll need to add the following code block. Whilst including
+this in every code module has no undesirable side effects, it may be more convenient to add it to a common test
+initialisation script.
 
 ```typescript
-import 'rosie-extended';
+import { Factory } from 'rosie';
+import { extend } from 'rosie-extended';
+extend(Factory);
 ```
 
 ## Rosie-Extended API
