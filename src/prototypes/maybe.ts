@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IFactory } from 'rosie';
-import { RosieFactoryOptions, IFactoryEx, TFactory } from '../types';
+import { BaseFactoryOptions, IFactoryEx, TFactory } from '../types';
 import { maybe } from '../utils';
 
 export default function <T>(this: IFactory<T>, attr: string, dependencies: string[] | any, value?: any): IFactory<T>;
-export default function <T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(this: IFactoryEx<T, U>, attr: string, dependencies: string[] | any, value?: any): IFactoryEx<T, U>;
-export default function <T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(this: any, attr: string, dependencies: string[] | any, value?: any): TFactory<T, U> {
+export default function <T, U extends BaseFactoryOptions<T> = BaseFactoryOptions<T>>(this: IFactoryEx<T, U>, attr: string, dependencies: string[] | any, value?: any): IFactoryEx<T, U>;
+export default function <T, U extends BaseFactoryOptions<T> = BaseFactoryOptions<T>>(this: any, attr: string, dependencies: string[] | any, value?: any): TFactory<T, U> {
     if (this.opts['includeMaybe'] === undefined) {
         this.option('includeMaybe', true);
     }

@@ -2,11 +2,11 @@
 import { IFactory } from 'rosie';
 
 import { fillGaps, maybe } from '../utils';
-import { RosieFactoryOptions, IFactoryEx, TFactory } from '../types';
+import { BaseFactoryOptions, IFactoryEx, TFactory } from '../types';
 
 export default function <T>(this: IFactory<T>, attr: string, size: string | TFactory, factory?: TFactory): IFactory<T>;
-export default function <T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(this: IFactoryEx<T, U>, attr: string, size: string | TFactory, factory?: TFactory): IFactoryEx<T, U>;
-export default function <T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(this: any, attr: string, size: string | TFactory, factory?: TFactory): TFactory<T, U> {
+export default function <T, U extends BaseFactoryOptions<T> = BaseFactoryOptions<T>>(this: IFactoryEx<T, U>, attr: string, size: string | TFactory, factory?: TFactory): IFactoryEx<T, U>;
+export default function <T, U extends BaseFactoryOptions<T> = BaseFactoryOptions<T>>(this: any, attr: string, size: string | TFactory, factory?: TFactory): TFactory<T, U> {
     if (this.opts['includeMaybe'] === undefined) {
         this.option('includeMaybe', true);
     }

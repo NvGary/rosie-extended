@@ -6,9 +6,9 @@ export interface MaybeFactoryOptions<T> {
     mustHave?: Array<keyof T>
 };
 
-export type RosieFactoryOptions<T> = MaybeFactoryOptions<T> & {}
+export type BaseFactoryOptions<T> = MaybeFactoryOptions<T> & {}
 
-export interface IFactoryEx<T = any, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>> {
+export interface IFactoryEx<T = any, U extends BaseFactoryOptions<T> = BaseFactoryOptions<T>> {
     /**
      * Define an optional attribute on this factory. Optional attributes are added to the
      * factory in an identical syntax to normal attributes.
@@ -19,10 +19,10 @@ export interface IFactoryEx<T = any, U extends RosieFactoryOptions<T> = RosieFac
      * This can be manipulated with the 'includeMaybe' option when calling #build.
      *
      * ```ts
-     * new Factory<T, U extends RosieFactoryOptions>().build({}, { includeMaybe: false })
+     * new Factory<T, U extends BaseFactoryOptions>().build({}, { includeMaybe: false })
      * ```
      *
-     * Factories using 'maybe' should ensure their Options inherit {@link RosieFactoryOptions}. This
+     * Factories using 'maybe' should ensure their Options inherit {@link BaseFactoryOptions}. This
      * adds an 'includeMaybe' for #build to optionally specify.
      *
      * @typeparam K name of attribute
@@ -293,4 +293,4 @@ export interface IFactoryEx<T = any, U extends RosieFactoryOptions<T> = RosieFac
     extend(name: string): IFactoryEx<T, U>;
 }
 
-export type TFactory<T = any, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>> = IFactory<T> | IFactoryEx<T, U>;
+export type TFactory<T = any, U extends BaseFactoryOptions<T> = BaseFactoryOptions<T>> = IFactory<T> | IFactoryEx<T, U>;

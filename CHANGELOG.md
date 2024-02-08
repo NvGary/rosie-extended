@@ -14,6 +14,10 @@ New factory option allows for optional attributes to be mandatory (always includ
 `mustHave` takes precedence over `includeMaybe`. `includeMaybe` can be false and any attributes listed as `mustHave`
 will still be created and appropriately populated with a relevant value.
 
+Example usage
+
+-   `option('mustHave', ['age', 'name'])`
+
 `mustHave` defaults to the empty array []
 
 ## 0.2.0

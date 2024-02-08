@@ -80,7 +80,7 @@ declare module 'rosie' {
     }
 
     export interface IFactoryStatic {
-        new <T, U extends RosieFactoryOptions<T> = any>(): IFactoryEx<T, U>;
+        new <T, U extends BaseFactoryOptions<T> = any>(): IFactoryEx<T, U>;
     }
 }
 
@@ -89,7 +89,7 @@ export interface MaybeFactoryOptions<T> {
     mustHave?: [keyof T]
 }
 
-export type RosieFactoryOptions<T> = MaybeFactoryOptions<T> & {}
+export type BaseFactoryOptions<T> = MaybeFactoryOptions<T> & {}
 
 /**
  * @template [T=any] data structure to create
@@ -112,7 +112,7 @@ export interface IFactoryEx<T = any, U = any> {
      * This can be manipulated with the 'includeMaybe' option when calling #build.
      *
      * ```ts
-     * new Factory<T, U extends RosieFactoryOptions>().build({}, { includeMaybe: false })
+     * new Factory<T, U extends BaseFactoryOptions>().build({}, { includeMaybe: false })
      * ```
      *
      * Dependencies can be names of either attributes or options, or any combination of.
@@ -120,7 +120,7 @@ export interface IFactoryEx<T = any, U = any> {
      * self-dependency is not allowed and will be removed. Neither can 'includeMaybe' be
      * passed to the generator function.
      *
-     * Factories using 'maybe' should ensure their Options inherit {@link RosieFactoryOptions}. This
+     * Factories using 'maybe' should ensure their Options inherit {@link BaseFactoryOptions}. This
      * adds an 'includeMaybe' for #build to optionally specify.
      *
      * @typeparam K name of attribute
@@ -396,7 +396,7 @@ export function fillGaps<T>(
     attributes?: { [k in keyof T]?: T[k] },
     options?: any
 ): Array<T>;
-export function fillGaps<T, U extends RosieFactoryOptions<T> = RosieFactoryOptions<T>>(
+export function fillGaps<T, U extends BaseFactoryOptions<T> = BaseFactoryOptions<T>>(
     data: Array<T> | undefined,
     factory: Pick<IFactoryEx<T, U>, 'build' | 'buildList'>,
     size: number,

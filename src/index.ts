@@ -1,3 +1,3 @@
 export { install as extend } from './prototypes/install'
-export { IFactoryEx, RosieFactoryOptions as RosieFactoryOptions } from './types';
+export { IFactoryEx, BaseFactoryOptions as BaseFactoryOptions } from './types';
 export * from './utils';
