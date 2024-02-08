@@ -17,7 +17,7 @@ export function fillGaps<T, U extends BaseFactoryOptions<T> = BaseFactoryOptions
     factory: Pick<TFactory<T, U>, 'build' | 'buildList'>,
     size: number,
     attributes?: { [k in keyof T]?: T[k] },
-    options?: { [o in keyof U]?: U[o] }
+    options?: { [o in keyof U]?: U[o] },
 ): Array<T> {
     if (data?.length !== undefined) {
         return data.map((props: T) => factory.build({ ...attributes, ...props }, { ...options }));

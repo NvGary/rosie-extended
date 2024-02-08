@@ -1,13 +1,13 @@
 import { Factory } from 'rosie';
 
-import { install } from './install';
 import fill from './fill';
 import fillMaybe from './fillMaybe';
+import { install } from './install';
 import maybe from './maybe';
 
 jest.mock('rosie', () => ({
     Factory: {
-        prototype: {}
+        prototype: {},
     },
 }));
 
@@ -44,7 +44,7 @@ describe('install', () => {
             expect(Factory.prototype.maybe).toBe(maybe);
         });
 
-        it('it safe to invoke install() multiple times', () => {
+        it('is safe to invoke install() multiple times', () => {
             install(Factory);
             install(Factory);
 

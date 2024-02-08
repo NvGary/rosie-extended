@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { IFactory } from 'rosie';
 
 import { IFactoryEx } from '../types';
+
 import { fillGaps } from './fillGaps';
 
 const mockFactory = {
@@ -42,7 +43,7 @@ describe('fillGaps', () => {
             it('respects empty array', () => {
                 const res = fillGaps([], factory, ignored_size_param);
                 expect(res).toEqual([]);
-            })
+            });
 
             it('invokes factory.build', () => {
                 fillGaps(props, factory, ignored_size_param);

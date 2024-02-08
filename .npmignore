@@ -1,0 +1,25 @@
+# sources are inlined
+src
+
+# jest config
+jest.config.js
+
+# TSconfig
+tsconfig.build.json
+tsconfig.json
+
+# ESlint
+.eslintignore
+.eslintrc.js
+.prettierignore
+.prettierrc
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Dependency directories
+node_modules
+
+# others
+.gitignore
+.npmignore

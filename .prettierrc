@@ -1,0 +1,13 @@
+semi: true
+printWidth: 120
+singleQuote: true
+tabWidth: 4
+useTabs: false
+trailingComma: all
+overrides:
+  - files: '**/*.js'
+    options:
+      trailingComma: es5
+  - files: '.*rc'
+    options:
+      tabWidth: 2

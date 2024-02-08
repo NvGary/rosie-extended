@@ -3,10 +3,10 @@ import { IFactory } from 'rosie';
 
 export interface MaybeFactoryOptions<T> {
     includeMaybe?: boolean;
-    mustHave?: Array<keyof T>
-};
+    mustHave?: Array<keyof T>;
+}
 
-export type BaseFactoryOptions<T> = MaybeFactoryOptions<T> & {}
+export type BaseFactoryOptions<T> = MaybeFactoryOptions<T> & Record<string, never>;
 
 export interface IFactoryEx<T = any, U extends BaseFactoryOptions<T> = BaseFactoryOptions<T>> {
     /**
@@ -35,17 +35,33 @@ export interface IFactoryEx<T = any, U extends BaseFactoryOptions<T> = BaseFacto
     maybe<K extends keyof T, D extends keyof T, O extends keyof U>(
         name: K,
         dependencies: [D, O],
-        generatorFunction: (value1: T[D], value2: U[O]) => T[K]
+        generatorFunction: (value1: T[D], value2: U[O]) => T[K],
     ): IFactoryEx<T, U>;
     maybe<K extends keyof T, O extends keyof U, D extends keyof T>(
         name: K,
         dependencies: [O, D],
-        generatorFunction: (value1: U[O], value2: T[D]) => T[K]
+        generatorFunction: (value1: U[O], value2: T[D]) => T[K],
     ): IFactoryEx<T, U>;
-    maybe<K extends keyof T, D extends keyof T>(name: K, dependencies: D[], generatorFunction: (value: T[D]) => T[K]): IFactoryEx<T, U>;
-    maybe<K extends keyof T, D extends keyof T>(name: K, dependencies: D[], generatorFunction: (...dependencies: any[]) => T[K]): IFactoryEx<T, U>;
-    maybe<K extends keyof T, O extends keyof U>(name: K, dependencies: O[], generatorFunction: (value: U[O]) => T[K]): IFactoryEx<T, U>;
-    maybe<K extends keyof T, O extends keyof U>(name: K, dependencies: O[], generatorFunction: (...dependencies: any[]) => T[K]): IFactoryEx<T, U>;
+    maybe<K extends keyof T, D extends keyof T>(
+        name: K,
+        dependencies: D[],
+        generatorFunction: (value: T[D]) => T[K],
+    ): IFactoryEx<T, U>;
+    maybe<K extends keyof T, D extends keyof T>(
+        name: K,
+        dependencies: D[],
+        generatorFunction: (...dependencies: any[]) => T[K],
+    ): IFactoryEx<T, U>;
+    maybe<K extends keyof T, O extends keyof U>(
+        name: K,
+        dependencies: O[],
+        generatorFunction: (value: U[O]) => T[K],
+    ): IFactoryEx<T, U>;
+    maybe<K extends keyof T, O extends keyof U>(
+        name: K,
+        dependencies: O[],
+        generatorFunction: (...dependencies: any[]) => T[K],
+    ): IFactoryEx<T, U>;
 
     /**
      * Define attribute as a child object, or array of child objects, and fill in
@@ -53,33 +69,37 @@ export interface IFactoryEx<T = any, U extends BaseFactoryOptions<T> = BaseFacto
      *
      * This method ensures child objects have as many attributes filled as possible.
      *
-         * ```ts
-         *   // will populate the child object 'address' using AddressFactory
-         *   new Factory<T>().fill('address', AddressFactory)
-         *
-         *   // will respect existing child attribute values, populating only what is missing using AddressFactory
-         *   new Factory<T>().fill('address', AddressFactory).build({ address: { county: 'Devon' } })
-         * ```
-         *
-         * Fill can conditionally return an array. Simply include the size parameter.
-         * Size is respected when building a new array. If an existing array was provided
-         * as an override to #build, each child is filled out individually. Array length
-         * WILL NOT be updated to size.
-         *
-         * ```ts
-         *   // will create a new 2 member players array, populated using PlayerFactory
-         *   new Factory<T>().option('playerCount, 2).fill('players', 'playerCount', PlayerFactory).build();
-         *
-         *   // will returns players exactly as presented === []
-         *   new Factory<T>().option('playerCount, 2).fill('players', 'playerCount', PlayerFactory).build({ players: [] });
-         *
-         *   // will return 1 member players array, with missing attributes populated using PlayerFactory
-         *   new Factory<T>().option('playerCount, 2).fill('players', 'playerCount', PlayerFactory).build({ players: [ avatar: '' ] });
-         * ```
+     * ```ts
+     *   // will populate the child object 'address' using AddressFactory
+     *   new Factory<T>().fill('address', AddressFactory)
+     *
+     *   // will respect existing child attribute values, populating only what is missing using AddressFactory
+     *   new Factory<T>().fill('address', AddressFactory).build({ address: { county: 'Devon' } })
+     * ```
+     *
+     * Fill can conditionally return an array. Simply include the size parameter.
+     * Size is respected when building a new array. If an existing array was provided
+     * as an override to #build, each child is filled out individually. Array length
+     * WILL NOT be updated to size.
+     *
+     * ```ts
+     *   // will create a new 2 member players array, populated using PlayerFactory
+     *   new Factory<T>().option('playerCount, 2).fill('players', 'playerCount', PlayerFactory).build();
+     *
+     *   // will returns players exactly as presented === []
+     *   new Factory<T>().option('playerCount, 2).fill('players', 'playerCount', PlayerFactory).build({ players: [] });
+     *
+     *   // will return 1 member players array, with missing attributes populated using PlayerFactory
+     *   new Factory<T>().option('playerCount, 2).fill('players', 'playerCount', PlayerFactory).build({ players: [ avatar: '' ] });
+     * ```
      */
-    fill<K extends keyof T, O extends keyof U>(name: K, factory: IFactory<T[K]> | IFactoryEx<T[K]>): IFactoryEx<T, U>;
+    fill<K extends keyof T>(name: K, factory: IFactory<T[K]> | IFactoryEx<T[K]>): IFactoryEx<T, U>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fill<K extends keyof T, O extends keyof U>(name: K, factory: IFactory<T[K][any]> | IFactoryEx<T[K][any]>, size: O): IFactoryEx<T, U>;
+    fill<K extends keyof T, O extends keyof U>(
+        name: K,
+        factory: IFactory<T[K][any]> | IFactoryEx<T[K][any]>,
+        size: O,
+    ): IFactoryEx<T, U>;
 
     /**
      * Define an optional attribute on this factory. This optional attribute is
@@ -92,9 +112,13 @@ export interface IFactoryEx<T = any, U extends BaseFactoryOptions<T> = BaseFacto
      *
      * Refer to {@link IFactoryEx.maybe} for further details.
      */
-    fillMaybe<K extends keyof T, O extends keyof U>(name: K, factory: IFactory<T[K]> | IFactoryEx<T[K]>): IFactoryEx<T, U>;
+    fillMaybe<K extends keyof T>(name: K, factory: IFactory<T[K]> | IFactoryEx<T[K]>): IFactoryEx<T, U>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fillMaybe<K extends keyof T, O extends keyof U>(name: K, factory: IFactory<T[K][any]> | IFactoryEx<T[K][any]>, size: O): IFactoryEx<T, U>;
+    fillMaybe<K extends keyof T, O extends keyof U>(
+        name: K,
+        factory: IFactory<T[K][any]> | IFactoryEx<T[K][any]>,
+        size: O,
+    ): IFactoryEx<T, U>;
 
     /**
      * Define an attribute on this factory. Attributes can optionally define a
@@ -140,17 +164,33 @@ export interface IFactoryEx<T = any, U extends BaseFactoryOptions<T> = BaseFacto
     attr<K extends keyof T, D extends keyof T, O extends keyof U>(
         name: K,
         dependencies: [D, O],
-        generatorFunction: (value1: T[D], value2: U[O]) => T[K]
+        generatorFunction: (value1: T[D], value2: U[O]) => T[K],
     ): IFactoryEx<T, U>;
     attr<K extends keyof T, O extends keyof U, D extends keyof T>(
         name: K,
         dependencies: [O, D],
-        generatorFunction: (value1: U[O], value2: T[D]) => T[K]
+        generatorFunction: (value1: U[O], value2: T[D]) => T[K],
     ): IFactoryEx<T, U>;
-    attr<K extends keyof T, D extends keyof T>(name: K, dependencies: D[], generatorFunction: (value: T[D]) => T[K]): IFactoryEx<T, U>;
-    attr<K extends keyof T, D extends keyof T>(name: K, dependencies: D[], generatorFunction: (...dependencies: any[]) => T[K]): IFactoryEx<T, U>;
-    attr<K extends keyof T, O extends keyof U>(name: K, dependencies: O[], generatorFunction: (value: U[O]) => T[K]): IFactoryEx<T, U>;
-    attr<K extends keyof T, O extends keyof U>(name: K, dependencies: O[], generatorFunction: (...dependencies: any[]) => T[K]): IFactoryEx<T, U>;
+    attr<K extends keyof T, D extends keyof T>(
+        name: K,
+        dependencies: D[],
+        generatorFunction: (value: T[D]) => T[K],
+    ): IFactoryEx<T, U>;
+    attr<K extends keyof T, D extends keyof T>(
+        name: K,
+        dependencies: D[],
+        generatorFunction: (...dependencies: any[]) => T[K],
+    ): IFactoryEx<T, U>;
+    attr<K extends keyof T, O extends keyof U>(
+        name: K,
+        dependencies: O[],
+        generatorFunction: (value: U[O]) => T[K],
+    ): IFactoryEx<T, U>;
+    attr<K extends keyof T, O extends keyof U>(
+        name: K,
+        dependencies: O[],
+        generatorFunction: (...dependencies: any[]) => T[K],
+    ): IFactoryEx<T, U>;
 
     /**
      * Convenience function for defining a set of attributes on this object as
@@ -200,11 +240,15 @@ export interface IFactoryEx<T = any, U extends BaseFactoryOptions<T> = BaseFacto
      */
     option<K extends keyof U>(name: K, defaultValue: U[K]): IFactoryEx<T, U>;
     option<K extends keyof U>(name: K, generatorFunction: () => U[K] | undefined): IFactoryEx<T, U>;
-    option<K extends keyof U, D extends keyof U>(name: K, dependencies: D[], generatorFunction: (value: U[D]) => U[K] | undefined): IFactoryEx<T, U>;
     option<K extends keyof U, D extends keyof U>(
         name: K,
         dependencies: D[],
-        generatorFunction: (...dependencies: any[]) => U[K] | undefined
+        generatorFunction: (value: U[D]) => U[K] | undefined,
+    ): IFactoryEx<T, U>;
+    option<K extends keyof U, D extends keyof U>(
+        name: K,
+        dependencies: D[],
+        generatorFunction: (...dependencies: any[]) => U[K] | undefined,
     ): IFactoryEx<T, U>;
 
     /**
@@ -226,7 +270,11 @@ export interface IFactoryEx<T = any, U extends BaseFactoryOptions<T> = BaseFacto
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sequence<K extends keyof T>(name: K, builder?: (i: number) => T[K]): IFactoryEx<T, U>;
-    sequence<K extends keyof T, D extends keyof T>(name: K, dependencies: D[], builder: (i: number, ...args: any[]) => T[K]): IFactoryEx<T, U>;
+    sequence<K extends keyof T, D extends keyof T>(
+        name: K,
+        dependencies: D[],
+        builder: (i: number, ...args: any[]) => T[K],
+    ): IFactoryEx<T, U>;
 
     /**
      * Sets a post-processor callback that will receive built objects and the

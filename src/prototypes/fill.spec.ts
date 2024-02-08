@@ -2,6 +2,7 @@ import { IFactory } from 'rosie';
 
 import { IFactoryEx } from '../types';
 import { fillGaps } from '../utils/fillGaps';
+
 import impl from './fill';
 
 jest.mock('../utils/fillGaps', () => {

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+
 import { MaybeFactoryOptions } from '../types';
 
 /**
@@ -18,14 +19,20 @@ import { MaybeFactoryOptions } from '../types';
  * @returns {NonNullable<T>} Result of the callback, or undefined if callback was not invoked
  */
 export function maybe<T>(callback: () => NonNullable<T>): NonNullable<T> | undefined;
-export function maybe<T = Record<string, any>, K extends keyof T = keyof T>(callback: () => T[K], name: K, options: MaybeFactoryOptions<T>): T[K] | undefined;
-export function maybe<T = any>(callback: () => any, name?: keyof T, options?: MaybeFactoryOptions<T>): any {
-    const {includeMaybe = true, mustHave = []} = options ?? {};
+export function maybe<T = Record<string, NonNullable<unknown>>, K extends keyof T = keyof T>(
+    callback: () => T[K],
+    name: K,
+    options: MaybeFactoryOptions<T>,
+): T[K] | undefined;
+export function maybe<T = NonNullable<unknown>>(
+    callback: () => NonNullable<unknown>,
+    name?: keyof T,
+    options?: MaybeFactoryOptions<T>,
+): NonNullable<unknown> {
+    const { includeMaybe = true, mustHave = [] } = options ?? {};
 
-    if (name && mustHave.includes(name))
-        return callback();
-    else
-        return includeMaybe ? faker.helpers.maybe(callback) : undefined;
+    if (name && mustHave.includes(name)) return callback();
+    else return includeMaybe ? faker.helpers.maybe(callback) : undefined;
 }
 
 export default maybe;

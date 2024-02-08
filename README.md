@@ -7,8 +7,9 @@ Original Rosie functionality is not documented here. Only what Rosie-Extended ad
 ## Overview
 
 This package extends rosie by leveraging TypeScript and adding additional helper methods to factory definitions. Of particular note are:
-- optional factory attributes
-- typesafe build Options
+
+-   optional factory attributes
+-   typesafe build Options
 
 ## Usage
 
@@ -28,14 +29,13 @@ const GameFactory = new Factory<Game>()
     .attr('random_seed', () => Math.random())
 
     // If players were given, fill in whatever attributes might be missing.
-    .fill('players', 'playerCount', PlayerFactory)
+    .fill('players', 'playerCount', PlayerFactory);
 ```
 
 If you wish for type-safe Options you can specify a second generic type to the Factory constructor.
 
 ```typescript
-const BetterGameFactory = new Factory<Game, GameFactoryOptions>()
-    .extend(GameFactory)
+const BetterGameFactory = new Factory<Game, GameFactoryOptions>().extend(GameFactory);
 ```
 
 **Object Building:** Build an object
@@ -66,8 +66,9 @@ extend(Factory);
 #### Factory (constructor)
 
 Passing an Options interface as the second generic type, allows for type-safe compilation for all option parameters. If your factory actively uses maybe or any of its variants, e.g. fillMaybe, it is recommended the Option interface inherit from `BaseFactoryOptions`. This interface adds the following options which can be set during any future build calls. Other options may be added in future releases.
-- `includeMaybe` - should **all** _maybe_ attributes be included in the final object - defaults to `true`
-- `mustHave` - named attributes must be included in the final object - defaults to empty array `[]`
+
+-   `includeMaybe` - should **all** _maybe_ attributes be included in the final object - defaults to `true`
+-   `mustHave` - named attributes must be included in the final object - defaults to empty array `[]`
 
 #### instance.maybe:
 

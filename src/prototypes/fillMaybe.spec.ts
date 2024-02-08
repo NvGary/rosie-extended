@@ -4,6 +4,7 @@ import { IFactory } from 'rosie';
 import { IFactoryEx } from '../types';
 import { fillGaps } from '../utils/fillGaps';
 import { maybe } from '../utils/maybe';
+
 import impl from './fillMaybe';
 
 jest.mock('../utils/fillGaps', () => {
@@ -101,26 +102,34 @@ describe('fillMaybe', () => {
                     ${{ address: undefined }} | ${undefined}                  | ${0}  | ${0}  | ${'respect .build({ attr: undefined })'}
                     ${{ address }}            | ${{ ...address, foo: 'bar' }} | ${1}  | ${0}  | ${'respect .build({ attr: (any value) })'}
                     ${{}}                     | ${{ foo: 'bar' }}             | ${1}  | ${1}  | ${'use provided factory'}
-                `('populate obj within .after callback - $comments', ({ obj, build: callsToBuild, maybe: callsToMaybe, result }) => {
-                    const [[cb]] = (THIS.after as jest.Mock).mock.calls;
-                    cb(obj, opts);
+                `(
+                    'populate obj within .after callback - $comments',
+                    ({ obj, build: callsToBuild, maybe: callsToMaybe, result }) => {
+                        const [[cb]] = (THIS.after as jest.Mock).mock.calls;
+                        cb(obj, opts);
 
-                    expect(obj).toHaveProperty('address', result);
-                    expect(factory.build).toHaveBeenCalledTimes(callsToBuild);
-                    expect(maybe).toHaveBeenCalledTimes(callsToMaybe);
-                });
+                        expect(obj).toHaveProperty('address', result);
+                        expect(factory.build).toHaveBeenCalledTimes(callsToBuild);
+                        expect(maybe).toHaveBeenCalledTimes(callsToMaybe);
+                    },
+                );
 
                 it('passes MaybeFactoryOptions values', () => {
                     const includeMaybe = faker.datatype.boolean();
-                    const mustHave = new Array(faker.number.int({min: 1, max: 5})).fill(() => faker.word.sample());
+                    const mustHave = new Array(faker.number.int({ min: 1, max: 5 })).fill(() => faker.word.sample());
 
                     const [[cb]] = (THIS.after as jest.Mock).mock.calls;
                     cb({}, { ...opts, includeMaybe, mustHave });
 
                     expect(maybe).toHaveBeenCalledTimes(1);
-                    expect(maybe).toHaveBeenCalledWith(expect.any(Function), expect.any(String), expect.objectContaining({
-                        includeMaybe, mustHave
-                    }));
+                    expect(maybe).toHaveBeenCalledWith(
+                        expect.any(Function),
+                        expect.any(String),
+                        expect.objectContaining({
+                            includeMaybe,
+                            mustHave,
+                        }),
+                    );
                 });
 
                 it.each`
@@ -139,9 +148,9 @@ describe('fillMaybe', () => {
 
         describe('fillMaybe(attr, size, factory)', () => {
             describe.each`
-                optionKey | optionDefaultValue
+                optionKey         | optionDefaultValue
                 ${'includeMaybe'} | ${true}
-                ${'mustHave'} | ${[]}
+                ${'mustHave'}     | ${[]}
             `('setup option $optionKey', ({ optionKey, optionDefaultValue }) => {
                 it('creates $optionKey option where it does NOT already exist', () => {
                     impl.call(THIS, 'addresses', 'addressCount', factory);
@@ -175,7 +184,9 @@ describe('fillMaybe', () => {
                 const opts = { addressCount: 1 };
 
                 beforeEach(() => {
-                    (fillGaps as jest.Mock).mockImplementation((v = []) => v.map((a: Object) => ({ ...a, foo: 'bar' })));
+                    (fillGaps as jest.Mock).mockImplementation((v = []) =>
+                        v.map((a: object) => ({ ...a, foo: 'bar' })),
+                    );
                     (maybe as jest.Mock).mockImplementation((v) => v());
                     impl.call(THIS, 'addresses', 'addressCount', factory);
                 });
@@ -185,31 +196,38 @@ describe('fillMaybe', () => {
                     ${{ addresses: undefined }} | ${undefined}                         | ${undefined}              | ${0}  | ${0}  | ${'respect .build({ attr: undefined })'}
                     ${{ addresses }}            | ${[{ ...addresses[0], foo: 'bar' }]} | ${undefined}              | ${1}  | ${0}  | ${'respect .build({ attr: (any value) })'}
                     ${{}}                       | ${[{ foo: 'bar' }]}                  | ${() => [{ foo: 'bar' }]} | ${1}  | ${1}  | ${'use fillGaps'}
-                `('populate obj within .after callback - $comments', ({ obj, mock, build: callsToBuild, maybe: callsToMaybe, result }) => {
-                    if (mock !== undefined) {
-                        (fillGaps as jest.Mock).mockImplementation(mock);
-                    }
+                `(
+                    'populate obj within .after callback - $comments',
+                    ({ obj, mock, build: callsToBuild, maybe: callsToMaybe, result }) => {
+                        if (mock !== undefined) {
+                            (fillGaps as jest.Mock).mockImplementation(mock);
+                        }
 
-                    const [[cb]] = (THIS.after as jest.Mock).mock.calls;
-                    cb(obj, opts);
+                        const [[cb]] = (THIS.after as jest.Mock).mock.calls;
+                        cb(obj, opts);
 
-                    expect(obj).toHaveProperty('addresses', result);
-                    expect(fillGaps).toHaveBeenCalledTimes(callsToBuild);
-                    expect(maybe).toHaveBeenCalledTimes(callsToMaybe);
-                });
-
+                        expect(obj).toHaveProperty('addresses', result);
+                        expect(fillGaps).toHaveBeenCalledTimes(callsToBuild);
+                        expect(maybe).toHaveBeenCalledTimes(callsToMaybe);
+                    },
+                );
 
                 it('passes MaybeFactoryOptions values', () => {
                     const includeMaybe = faker.datatype.boolean();
-                    const mustHave = new Array(faker.number.int({min: 1, max: 5})).fill(() => faker.word.sample());
+                    const mustHave = new Array(faker.number.int({ min: 1, max: 5 })).fill(() => faker.word.sample());
 
                     const [[cb]] = (THIS.after as jest.Mock).mock.calls;
                     cb({}, { ...opts, includeMaybe, mustHave });
 
                     expect(maybe).toHaveBeenCalledTimes(1);
-                    expect(maybe).toHaveBeenCalledWith(expect.any(Function), expect.any(String), expect.objectContaining({
-                        includeMaybe, mustHave
-                    }));
+                    expect(maybe).toHaveBeenCalledWith(
+                        expect.any(Function),
+                        expect.any(String),
+                        expect.objectContaining({
+                            includeMaybe,
+                            mustHave,
+                        }),
+                    );
                 });
 
                 it.each`
@@ -237,7 +255,13 @@ describe('fillMaybe', () => {
                     cb({ ...obj }, opts);
 
                     expect(fillGaps).toHaveBeenCalledTimes(1);
-                    expect(fillGaps).toHaveBeenCalledWith(obj.addresses, expect.anything(), resultant, undefined, expect.anything());
+                    expect(fillGaps).toHaveBeenCalledWith(
+                        obj.addresses,
+                        expect.anything(),
+                        resultant,
+                        undefined,
+                        expect.anything(),
+                    );
                 });
             });
         });

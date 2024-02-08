@@ -14,7 +14,7 @@ describe('maybe', () => {
         fakerImpl       | cbInvoked | description
         ${(cb) => cb()} | ${1}      | ${'faker resolves to true'}
         ${undefined}    | ${0}      | ${'faker resolves to false'}
-    `('$description', ({cbInvoked, fakerImpl}) => {
+    `('$description', ({ cbInvoked, fakerImpl }) => {
         let cb: jest.Mock;
         beforeEach(() => {
             cb = jest.fn();
@@ -27,11 +27,11 @@ describe('maybe', () => {
             expect(cb).toHaveBeenCalledTimes(cbInvoked);
         });
 
-        if (cbInvoked){
+        if (cbInvoked) {
             it('returns the return value from the callback', () => {
                 cb.mockReturnValue(faker.word.sample());
                 const res = maybe(cb);
-    
+
                 expect(res).toBe(cb.mock.results[0].value);
             });
         }
@@ -54,7 +54,7 @@ describe('maybe', () => {
             maybe<Customer>(cb, 'name', { includeMaybe: false, mustHave: ['age'] });
 
             expect(cb).not.toHaveBeenCalled();
-        })
+        });
     });
 
     afterEach(() => {

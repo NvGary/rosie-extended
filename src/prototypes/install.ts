@@ -1,4 +1,5 @@
 import { Factory } from 'rosie';
+
 import fill from './fill';
 import fillMaybe from './fillMaybe';
 import maybe from './maybe';

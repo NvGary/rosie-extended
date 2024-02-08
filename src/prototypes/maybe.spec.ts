@@ -1,9 +1,10 @@
+import { faker } from '@faker-js/faker';
 import { IFactory } from 'rosie';
 
 import { IFactoryEx } from '../types';
 import { maybe } from '../utils/maybe';
+
 import impl from './maybe';
-import { faker } from '@faker-js/faker';
 
 jest.mock('../utils/maybe', () => {
     const maybe = jest.fn();
@@ -71,11 +72,11 @@ describe('maybe', () => {
                 });
 
                 describe.each`
-                    utilityFn | includeMaybe | maybeMock     | mustHaveAttrs | result    | description
-                    ${maybe}  | ${true}      | ${(v) => v()} | ${[]}         | ${true}   | ${'generator (includeMaybe) => maybe(...)'}
-                    ${maybe}  | ${false}     | ${(v) => v()} | ${[]}         | ${false}  | ${'generator (includeMaybe) => maybe(...)'}
-                    ${maybe}  | ${undefined} | ${(v) => v()} | ${[]}         | ${'blah'} | ${'generator (includeMaybe) => maybe(...)'}
-                `('$description', ({includeMaybe, maybeMock, result, utilityFn}) => {
+                    utilityFn | includeMaybe | maybeMock     | mustHaveAttrs | description
+                    ${maybe}  | ${true}      | ${(v) => v()} | ${[]}         | ${'generator (includeMaybe) => maybe(...)'}
+                    ${maybe}  | ${false}     | ${(v) => v()} | ${[]}         | ${'generator (includeMaybe) => maybe(...)'}
+                    ${maybe}  | ${undefined} | ${(v) => v()} | ${[]}         | ${'generator (includeMaybe) => maybe(...)'}
+                `('$description', ({ includeMaybe, maybeMock, utilityFn }) => {
                     beforeEach(() => {
                         (maybe as jest.Mock).mockImplementation(maybeMock);
                     });
@@ -85,7 +86,11 @@ describe('maybe', () => {
                         cb(includeMaybe);
 
                         expect(utilityFn).toHaveBeenCalledTimes(1);
-                        expect(utilityFn).toHaveBeenCalledWith(expect.any(Function), expect.any(String), expect.any(Object));
+                        expect(utilityFn).toHaveBeenCalledWith(
+                            expect.any(Function),
+                            expect.any(String),
+                            expect.any(Object),
+                        );
 
                         const [[, , options]] = jest.mocked(maybe).mock.calls;
                         expect(options).toHaveProperty('includeMaybe', includeMaybe);
@@ -98,35 +103,6 @@ describe('maybe', () => {
                         expect(res).toBe('blah');
                     });
                 });
-
-                // describe.each`
-                //     utilityFn    | includeMaybe | mustHaveMock  | mustHaveAttrs | maybeMock          | result    | description
-                //     ${mustHave}  | ${true}      | ${(v) => v()} | ${['name']}   | ${() => undefined} | ${true}   | ${'generator (mustHaveAttrs) => mustHave(...)'}
-                //     ${mustHave}  | ${false}     | ${(v) => v()} | ${['age']}    | ${() => undefined} | ${false}  | ${'generator (mustHaveAttrs) => mustHave(...)'}
-                //     ${mustHave}  | ${undefined} | ${(v) => v()} | ${[]}         | ${() => undefined} | ${false}  | ${'generator (mustHaveAttrs) => mustHave(...)'}
-                // `('$description', ({includeMaybe, mustHaveAttrs, mustHaveMock, result, utilityFn}) => {
-                //     beforeEach(() => {
-                //         (mustHave as jest.Mock).mockImplementation(mustHaveMock);
-                //     });
-
-                //     it(`passes mustHave = ${mustHaveAttrs} to helper`, () => {
-                //         const [[, , cb]] = (THIS.attr as jest.Mock).mock.calls;
-                //         cb(includeMaybe, mustHaveAttrs);
-
-                //         expect(utilityFn).toHaveBeenCalledTimes(1);
-                //         expect(utilityFn).toHaveBeenCalledWith(expect.any(Function), expect.any(Function));
-
-                //         const [[, checkFn]] = jest.mocked(utilityFn).mock.calls;
-                //         expect(checkFn()).toBe(result)
-                //     });
-
-                //     it(`returns generator result (mustHave = ${mustHaveAttrs})`, () => {
-                //         const [[, , cb]] = (THIS.attr as jest.Mock).mock.calls;
-                //         const res = cb();
-
-                //         expect(res).toBe('blah');
-                //     });
-                // });
             });
         });
 
@@ -137,9 +113,9 @@ describe('maybe', () => {
             });
 
             describe.each`
-                optionKey | optionDefaultValue
+                optionKey         | optionDefaultValue
                 ${'includeMaybe'} | ${true}
-                ${'mustHave'} | ${[]}
+                ${'mustHave'}     | ${[]}
             `('setup option $optionKey', ({ optionKey, optionDefaultValue }) => {
                 it('creates $optionKey option where it does NOT already exist', () => {
                     impl.call(THIS, 'name', ['a', 'b', 'c'], generator);
@@ -169,7 +145,11 @@ describe('maybe', () => {
 
                 it("maps to rosie attr('name', ['includeMaybe', 'mustHave', 'age', 'gender'], generator)", () => {
                     expect(THIS.attr).toHaveBeenCalledTimes(1);
-                    expect(THIS.attr).toHaveBeenCalledWith('name', ['includeMaybe', 'mustHave', 'age', 'gender'], expect.any(Function));
+                    expect(THIS.attr).toHaveBeenCalledWith(
+                        'name',
+                        ['includeMaybe', 'mustHave', 'age', 'gender'],
+                        expect.any(Function),
+                    );
                 });
 
                 describe(`generator (includeMaybe, mustHave = [], age, gender) => maybe(() => generator(age, gender), () => includeMaybe)`, () => {
@@ -182,7 +162,11 @@ describe('maybe', () => {
                         cb(includeMaybe, []);
 
                         expect(maybe).toHaveBeenCalledTimes(1);
-                        expect(maybe).toHaveBeenCalledWith(expect.any(Function), expect.any(String), expect.any(Object));
+                        expect(maybe).toHaveBeenCalledWith(
+                            expect.any(Function),
+                            expect.any(String),
+                            expect.any(Object),
+                        );
 
                         const [[, , options]] = jest.mocked(maybe).mock.calls;
                         expect(options).toHaveProperty('includeMaybe', includeMaybe);
@@ -203,43 +187,6 @@ describe('maybe', () => {
                         expect(res).toBe(generator.mock.results[0].value);
                     });
                 });
-
-                // describe.each`
-                //     mustHaveAttrs | checkResult
-                //     ${['name']}   | ${true}
-                //     ${['age']}    | ${false}
-                // `(`generator (includeMaybe, mustHave = $mustHaveAttrs, age, gender) => mustHave(() => generator(age, gender), () => $checkResult)`,
-                //     ({ mustHaveAttrs, checkResult }) => {
-                //     beforeEach(() => {
-                //         (mustHave as jest.Mock).mockImplementation((v) => v());
-                //     });
-
-                //     it.each([[true], [false]])('passes mustHave = $mustHaveAttrs to helper', (includeMaybe) => {
-                //         const [[, , cb]] = (THIS.attr as jest.Mock).mock.calls;
-                //         cb(includeMaybe, mustHaveAttrs);
-
-                //         expect(mustHave).toHaveBeenCalledTimes(1);
-                //         expect(mustHave).toHaveBeenCalledWith(expect.any(Function), expect.any(Function));
-
-                //         const [[, checkFn]] = jest.mocked(mustHave).mock.calls;
-                //         expect(checkFn()).toBe(checkResult)
-                //     });
-
-                //     it('passes dependencies to generator', () => {
-                //         const [[, , cb]] = (THIS.attr as jest.Mock).mock.calls;
-                //         cb(undefined, mustHaveAttrs, 10, 'male');
-
-                //         expect(generator).toHaveBeenCalledTimes(1);
-                //         expect(generator).toHaveBeenCalledWith(10, 'male'); // ['age', 'gender']
-                //     });
-
-                //     it('returns generator result', () => {
-                //         const [[, , cb]] = (THIS.attr as jest.Mock).mock.calls;
-                //         const res = cb();
-
-                //         expect(res).toBe(generator.mock.results[0].value);
-                //     });
-                // });
             });
         });
 
